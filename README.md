@@ -17,8 +17,10 @@ To create the heatmap comparison, run
 If the predictions were not yet generated, the script will create all necessary prediction files via the supplied network builds; a summary of the result statistics can then be found in the Results folder. 
 
 Once all band adjustments are made, the resulting image should appear as:
-![heatmap.png](Results/heatmap.png?raw=true)
 
+<img src="Results/heatmap.png?raw=true" height=396 width=858></img>
+
+<br> 
 
 A command line interface is also available via cli.py:
 ```
