@@ -100,5 +100,5 @@ if __name__ == '__main__':
 	plt.gcf().text(.87, .55, 'Target Sensor', fontsize=18, va='center', rotation='vertical')
 
 	plt.subplots_adjust(wspace=1, hspace=0, right=.95, left=.1, bottom=.06, top=.95)#left=.1, wspace=.07, hspace=.07, bottom = .18, top=.9, right=.86)
-	# plt.savefig('Results/heatmap.png', dpi=200)
+	# plt.savefig('Results/heatmap.png', dpi=600)
 	plt.show()
