@@ -110,12 +110,13 @@ def batch_generator(data, batch_size, shuffle=True):
 class DNN(object):
     def __init__(self,  learning_rate = 0.0005, 
                         hidden_layers = [100]*6, 
-                        maximum_iter  = 1000, 
+                        maximum_iter  = 50000, 
                         batch_size    = 128,
                         dropout_rate  = 0.1, 
-                        l2_weight     = 1e-4, 
+                        l2_weight     = 1e-4,
+                        iter_progress = False, 
                         save_path     = None, 
-                        log_path      = None):
+                        log_path      = None, **kwargs):
 
         self.learning_rate = learning_rate
         self.hidden_layers = np.atleast_1d(hidden_layers)
@@ -123,9 +124,10 @@ class DNN(object):
         self.batch_size    = batch_size
         self.dropout_rate  = dropout_rate
         self.l2_weight     = l2_weight
+        self.iter_progress = iter_progress
         self.save_path     = save_path
         self.log_path      = log_path
-
+        self.done          = False
 
     def initialize(self):
         X_ph = tf.placeholder(tf.float32, [None, self.n_features], name='Input')
@@ -170,6 +172,7 @@ class DNN(object):
 
     def fit(self, X, Y):
         tf.reset_default_graph()
+        self.done = False 
 
         # Same as numpy method, but adds dimension on last axis
         atleast_2d = lambda x: x if len(x.shape) >= 2 else x[..., None]
@@ -184,8 +187,8 @@ class DNN(object):
             os.makedirs('Build/%s/' % self.save_path)
 
         generator = batch_generator([X, Y], self.batch_size)
-        iterator  = tqdm.trange(1, self.maximum_iter+1)
-        last_valid= np.inf
+        iter_meth = tqdm.trange if self.iter_progress else range
+        iterator  = iter_meth(1, self.maximum_iter+1)
         for i in iterator:
 
             # Annealed learning rate
@@ -198,11 +201,12 @@ class DNN(object):
 
             if i % 100 == 0:
                 metrics = { 'Train': '%.1f%%' % self.loss(X,Y) }
-                iterator.set_postfix(**metrics)
+                if self.iter_progress: iterator.set_postfix(**metrics)
 
         if self.save_path is not None:
             self.saver.save(self.session, 'Build/%s/'%self.save_path)
-
+        self.done = True
+        self.d2 = False 
 
     def loss(self, X, Y, n_sample=10000):
         ''' Mean absolute percentage error '''
@@ -214,10 +218,14 @@ class DNN(object):
         Z = self.predict(X)
         return 100 * np.mean(np.abs(Y - Z) / np.clip(np.abs(Y), 1e-5, np.inf))
 
-    ''' Wrappers to allow overloading '''
-    def predict(self, X):  
-        return self.run_prediction(X)
-    
+    def predict(self, X):
+        p = self.run_prediction(X)
+        if self.done: 
+            if self.d2:
+                self.session.close()
+            self.d2 = True
+        return p
+
     def get_params(self, deep=False): 
         return self.__dict__
     
