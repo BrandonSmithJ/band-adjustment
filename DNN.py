@@ -116,7 +116,7 @@ class DNN(object):
                         l2_weight     = 1e-4,
                         iter_progress = False, 
                         save_path     = None, 
-                        log_path      = None, **kwargs):
+                        **kwargs):
 
         self.learning_rate = learning_rate
         self.hidden_layers = np.atleast_1d(hidden_layers)
@@ -126,7 +126,6 @@ class DNN(object):
         self.l2_weight     = l2_weight
         self.iter_progress = iter_progress
         self.save_path     = save_path
-        self.log_path      = log_path
         self.done          = False
 
     def initialize(self):
@@ -183,8 +182,8 @@ class DNN(object):
         self.n_outputs  = Y.shape[1]
         self.initialize()
 
-        if self.save_path is not None and not os.path.exists('Build/%s/' % self.save_path):
-            os.makedirs('Build/%s/' % self.save_path)
+        if self.save_path is not None and not os.path.exists(self.save_path):
+            os.makedirs(self.save_path)
 
         generator = batch_generator([X, Y], self.batch_size)
         iter_meth = tqdm.trange if self.iter_progress else range
@@ -204,7 +203,7 @@ class DNN(object):
                 if self.iter_progress: iterator.set_postfix(**metrics)
 
         if self.save_path is not None:
-            self.saver.save(self.session, 'Build/%s/'%self.save_path)
+            self.saver.save(self.session, self.save_path)
         self.done = True
         self.d2 = False 
 
