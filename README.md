@@ -27,7 +27,8 @@ A command line interface is also available via cli.py:
 $ python3 cli.py -h
 usage: cli.py [-h] [-s SOURCE] [-t TARGET] [--filename FILENAME]
               [--datadir DATADIR] [--preddir PREDDIR] [--builddir BUILDDIR]
-              [--gridsearch GRIDSEARCH]
+              [--gridsearch GRIDSEARCH] [--trainfmt TRAINFMT]
+              [--testfmt TESTFMT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -41,6 +42,11 @@ optional arguments:
   --builddir BUILDDIR   Directory DNN build is located in
   --gridsearch GRIDSEARCH
                         Flag to turn on hyperparameter gridsearch
+  --trainfmt TRAINFMT   Format of training file(s), with %s identifying the
+                        source/target name (i.e. Rrs_LUT_%s)
+  --testfmt TESTFMT     Format of file(s) to be converted, with %s identifying
+                        the source/target name (i.e. Rrs_LUT_%s)
+
 ```
 
 For example, to create an adjustment from AERONET -> VIIRS using the supplied in situ file, you can run:
@@ -48,3 +54,19 @@ For example, to create an adjustment from AERONET -> VIIRS using the supplied in
 `python3 cli.py --source AER --target VI --filename "Data/In Situ/Rrs_insitu_AER"`
 
 which then creates the file "Predictions/AER_to_VI_DNN.csv". 
+
+<br>
+
+To train a new network, use the --datadir flag to point towards the training data location, and --trainfmt to specify the file name format.
+
+For example:
+
+`python3 cli.py --source AER --target VI --datadir "Data" --trainfmt "Rrs_LUT_%s"`
+
+The "%s" represents the sensor abbreviation, which in the above case would mean there should be two files available:
+
+./Data/Rrs_LUT_AER
+
+./Data/Rrs_LUT_VI
+
+The models will then be created which learn the mapping between bands of Rrs_LUT_AER and Rrs_LUT_VI.

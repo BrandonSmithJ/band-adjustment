@@ -74,8 +74,8 @@ def train_network(sensor_source, sensor_target,
 					save_path='Predictions',
 					data_path='Data',
 					build_path='Build',
-					train_fmt ='LUT/Rrs_LUT_%s',
-					test_fmt  ='In Situ/Rrs_insitu_%s',
+					train_fmt ='Rrs_LUT_%s',
+					test_fmt  ='Rrs_insitu_%s',
 					filename  = None,
 					gridsearch=False):
 	if not os.path.exists(save_path):
@@ -100,8 +100,8 @@ def train_network(sensor_source, sensor_target,
 		if not os.path.exists(os.path.join(model_path, 'scalers.pkl')):
 			print('No saved model for band %s of %s -> %s : now building' % (idx, sensor_source, sensor_target)) 
 			
-			train_source_path = data_path + train_fmt % sensor_source
-			train_target_path = data_path + train_fmt % sensor_target
+			train_source_path = os.path.join(data_path, train_fmt % sensor_source)
+			train_target_path = os.path.join(data_path, train_fmt % sensor_target)
 
 			X = get_data(train_source_path)[:, :n_bands[sensor_source]]
 			Y = get_data(train_target_path)[:, idx:idx+1]
@@ -148,7 +148,7 @@ def train_network(sensor_source, sensor_target,
 		predictions.append( model.predict(source_data) )
 		model.sess.close()
 
-	predictions = np.array(predictions)
+	predictions = np.array(predictions).reshape((len(predictions), -1))
 	save_file   = os.path.join(save_path, '%s_to_%s_DNN.csv' % (sensor_source, sensor_target))
 	np.savetxt(save_file, predictions, delimiter=',')
 	return predictions

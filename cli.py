@@ -10,8 +10,8 @@ if __name__ == '__main__':
 	parser.add_argument("--preddir", help="Directory predictions should go in", default="Predictions")
 	parser.add_argument("--builddir", help="Directory DNN build is located in", default="Build")
 	parser.add_argument("--gridsearch", help="Flag to turn on hyperparameter gridsearch", default=False)
-	parser.add_argument("--trainfmt", help="Location and format to find training files", default="LUT/Rrs_LUT_%s") 
-	parser.add_argument("--testfmt", help="Location and format to find testing files", default="In Situ/Rrs_insitu_%s") 
+	parser.add_argument("--trainfmt", help="Format of training file(s), with %%s identifying the source/target name (i.e. Rrs_LUT_%%s)", default="Rrs_LUT_%s") 
+	parser.add_argument("--testfmt", help="Format of file(s) to be converted, with %%s identifying the source/target name (i.e. Rrs_LUT_%%s)", default="Rrs_insitu_%s") 
 
 	args = parser.parse_args()
 	train_network(

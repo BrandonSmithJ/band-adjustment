@@ -203,7 +203,7 @@ class DNN(object):
                 if self.iter_progress: iterator.set_postfix(**metrics)
 
         if self.save_path is not None:
-            self.saver.save(self.session, self.save_path)
+            self.saver.save(self.session, os.path.join(self.save_path, ''))
         self.done = True
         self.d2 = False 
 
