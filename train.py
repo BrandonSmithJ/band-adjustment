@@ -88,7 +88,9 @@ def train_network(sensor_source, sensor_target,
 	if gridsearch: print('WARNING: Gridsearch can take a very long time.')
 
 	test_data_path = os.path.join(data_path, test_fmt % sensor_source) if filename is None else filename
-	source_data = get_data(test_data_path)
+	if os.path.exists(test_data_path):
+		source_data = get_data(test_data_path)
+	else: source_data = None 
 
 	print('Creating %s to %s' % (sensor_source, sensor_target))
 	predictions = []
@@ -145,13 +147,15 @@ def train_network(sensor_source, sensor_target,
 				pkl.dump([x_scaler, y_scaler], f)
 
 		model = Model(model_path)
-		predictions.append( model.predict(source_data) )
+		if source_data is not None:
+			predictions.append( model.predict(source_data) )
 		model.sess.close()
 
-	predictions = np.array(predictions).reshape((len(predictions), -1))
-	save_file   = os.path.join(save_path, '%s_to_%s_DNN.csv' % (sensor_source, sensor_target))
-	np.savetxt(save_file, predictions, delimiter=',')
-	return predictions
+	if source_data is not None:
+		predictions = np.array(predictions).reshape((len(predictions), -1))
+		save_file   = os.path.join(save_path, '%s_to_%s_DNN.csv' % (sensor_source, sensor_target))
+		np.savetxt(save_file, predictions, delimiter=',')
+		return predictions
 
 
 if __name__ == '__main__':
