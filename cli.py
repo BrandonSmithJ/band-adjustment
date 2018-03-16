@@ -10,6 +10,8 @@ if __name__ == '__main__':
 	parser.add_argument("--preddir", help="Directory predictions should go in", default="Predictions")
 	parser.add_argument("--builddir", help="Directory DNN build is located in", default="Build")
 	parser.add_argument("--gridsearch", help="Flag to turn on hyperparameter gridsearch", default=False)
+	parser.add_argument("--trainfmt", help="Location and format to find training files", default="LUT/Rrs_LUT_%s") 
+	parser.add_argument("--testfmt", help="Location and format to find testing files", default="In Situ/Rrs_insitu_%s") 
 
 	args = parser.parse_args()
 	train_network(
@@ -18,6 +20,8 @@ if __name__ == '__main__':
 		data_path = args.datadir,
 		save_path = args.preddir,
 		build_path= args.builddir,
+		train_fmt = args.trainfmt,
+		test_fmt  = args.testfmt,
 		filename  = args.filename,
 		gridsearch= args.gridsearch,
 	)

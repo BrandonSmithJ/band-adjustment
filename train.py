@@ -82,7 +82,7 @@ def train_network(sensor_source, sensor_target,
 		os.mkdir(save_path)
 
 	if sensor_target == sensor_source: 
-		print('Attempting to train network with same source and target')
+		print('Can\'t train network with same source and target.')
 		return
 
 	if gridsearch: print('WARNING: Gridsearch can take a very long time.')
