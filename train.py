@@ -11,14 +11,15 @@ import numpy as np
 import tqdm
 
 n_bands = {
-	'MSI' : 4,
-	'OLI' : 4,
-	'VI'  : 5,
-	'OLCI': 9,
-	'AER' : 6,
-	'ETM' : 3,
-	'TM'  : 3,
-	'MOD' : 10,
+	'MSI'  : 4,
+	'OLI'  : 4,
+	'VI'   : 5,
+	'OLCI' : 9,
+	'AER'  : 6,
+	'ETM'  : 3,
+	'TM'   : 3,
+	'MOD'  : 10,
+	'MERIS': 12,
 }
 
 def get_data(path):
