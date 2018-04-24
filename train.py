@@ -11,7 +11,8 @@ import numpy as np
 import tqdm
 
 n_bands = {
-	'MSI'  : 4,
+	'MSI-A': 4,
+	'MSI-B': 4,
 	'OLI'  : 4,
 	'VI'   : 5,
 	'OLCI' : 9,
@@ -19,7 +20,7 @@ n_bands = {
 	'ETM'  : 3,
 	'TM'   : 3,
 	'MOD'  : 10,
-	'MERIS': 12,
+	# 'MERIS': 12,
 }
 
 def get_data(path):
@@ -28,7 +29,7 @@ def get_data(path):
 	if data.shape[0] < data.shape[1]: data = data.T
 	try: data = data.astype(np.float32)
 	except ValueError: 
-		data[0,0] = data[0,0][3:] # Excel puts in hidden characters...
+		data[0,0] = '0.'+data[0,0].split('.')[1] # Excel puts in hidden characters...
 		data = data.astype(np.float32)
 	if np.sum(data[0]) > 10:
 		print('First row of data assumed to be wavelengths (nm)')
@@ -160,10 +161,23 @@ def train_network(sensor_source, sensor_target,
 
 
 if __name__ == '__main__':
-	source_target = [('OLI','MSI'), ('MSI', 'OLI'), ('OLCI','VI'), ('OLCI','OLI'), 
-					 ('OLCI', 'MSI'), ('VI', 'MSI'), ('VI', 'OLI')]
+	# source_target = [('OLI','MSI'), ('MSI', 'OLI'), ('OLCI','VI'), ('OLCI','OLI'), 
+	# 				 ('OLCI', 'MSI'), ('VI', 'MSI'), ('VI', 'OLI')]
+	source_target = []
+	for sensor in n_bands:
+		for part in ['-A', '-B']:
+			source = 'MSI' + part
+			if sensor == source: continue
+
+			if n_bands[sensor] <= n_bands[source]:
+				source_target.append((source, sensor))
+			if n_bands[sensor] >= n_bands[source]:
+				source_target.append((sensor, source))
+
 	for sensor_source,sensor_target in source_target:
-		train_network(sensor_source, sensor_target, gridsearch=False)
+		train_network(sensor_source, sensor_target, gridsearch=False, 
+					data_path='../Data', train_fmt='Train/Rrs_LUT_%s_915K',
+					test_fmt='Rrs_insitu_%s_Full_V3')
 
 	
 				
