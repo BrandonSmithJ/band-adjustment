@@ -1,7 +1,7 @@
 from train import train_network
 import argparse 
 
-if __name__ == '__main__':
+def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-s", "--source", help="Source sensor [VI, MSI, OLI, OLCI, AER]")
 	parser.add_argument("-t", "--target", help="Target sensor [VI, MSI, OLI, OLCI, AER]")
@@ -25,3 +25,5 @@ if __name__ == '__main__':
 		filename  = args.filename,
 		gridsearch= args.gridsearch,
 	)
+
+if __name__ == '__main__': main()
