@@ -20,7 +20,7 @@ n_bands = {
 	'AER'  : 6,
 	'ETM'  : 3,
 	'TM'   : 3,
-	'MOD'  : 10,
+	'MOD'  : 11,
 	'MERIS': 12,
 }
 
@@ -148,7 +148,8 @@ def train_network(sensor_source, sensor_target,
 
 			with open(os.path.join(model_path, 'scalers.pkl'), 'wb+') as f:
 				pkl.dump([x_scaler, y_scaler], f)
-
+			model.session.close()
+			
 		model = Model(model_path)
 		if source_data is not None:
 			predictions.append( model.predict(source_data) )
@@ -164,21 +165,21 @@ def train_network(sensor_source, sensor_target,
 if __name__ == '__main__':
 	# source_target = [('OLI','MSI'), ('MSI', 'OLI'), ('OLCI','VI'), ('OLCI','OLI'), 
 	# 				 ('OLCI', 'MSI'), ('VI', 'MSI'), ('VI', 'OLI')]
-	source_target = []
-	for sensor in n_bands:
-		for part in ['-A', '-B']:
-			source = 'MSI' + part
-			if sensor == source: continue
+	source_target = [('MOD', 'OLCI')]
+	# for sensor in n_bands:
+	# 	for part in ['-A', '-B']:
+	# 		source = 'MSI' + part
+	# 		if sensor == source: continue
 
-			if n_bands[sensor] <= n_bands[source]:
-				source_target.append((source, sensor))
-			if n_bands[sensor] >= n_bands[source]:
-				source_target.append((sensor, source))
+	# 		if n_bands[sensor] <= n_bands[source]:
+	# 			source_target.append((source, sensor))
+	# 		if n_bands[sensor] >= n_bands[source]:
+	# 			source_target.append((sensor, source))
 
 	for sensor_source,sensor_target in source_target:
 		train_network(sensor_source, sensor_target, gridsearch=False, 
-					data_path='../Data', train_fmt='Train/Rrs_LUT_%s_915K',
-					test_fmt='Rrs_insitu_%s_Full_V3')
+					data_path='../Data', train_fmt='Train/Part/%s/Rrs.csv',
+					test_fmt='null/%s')
 
 	
 				
