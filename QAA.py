@@ -51,6 +51,7 @@ to_Rrs = lambda rrs: (rrs * 0.52) / (1 - rrs * 1.7)
 
 
 def QAA(data, wavelength, lambda_reference=443):
+	# QAAv5: http://www.ioccg.org/groups/Software_OCA/QAA_v5.pdf
 	wavelength = np.array(wavelength)
 
 	# Functional interface into matrix
@@ -117,21 +118,23 @@ def QAA(data, wavelength, lambda_reference=443):
 	S  = 0.015 + (0.002 / (0.6 + rrs(443) / rrs(555)))
 	xi = np.exp(S * (key(443, wavelength) - key(412, wavelength))) 
 
-	a_g443 =  (a(412) - zeta * a(443)) / (xi - zeta) \
+	a_dg443 =  (a(412) - zeta * a(443)) / (xi - zeta) \
 			- (absorb(412) - zeta * absorb(443)) / (xi - zeta)
 
-	a_dg = a_g443 * np.exp(S * (key(443, wavelength) - wavelength))
+	a_dg = a_dg443 * np.exp(S * (key(443, wavelength) - wavelength))
 	a_ph = a(None) - a_dg - absorb(443)
 
 	# QAA-CDOM - Zhu & Yu 2013
-	b[b < 0] = 1e-5
-	a_ph[a_ph < 0] = 1e-5
-	a_p = 0.63 * b ** 0.88
-	a_g = a(None) - absorb(440) - a_p  
+	# b[b < 0] = 1e-5
+	# a_ph[a_ph < 0] = 1e-5
+	# a_dg[a_dg < 0] = 1e-5
+	# a_p = 0.63 * b ** 0.88
+	# a_g = a(None) - absorb(440) - a_p  
 	
 	return (idx(b)(lambda_reference), 
 			idx(a_ph)(lambda_reference), 
-			idx(a_g)(lambda_reference), eta, S)
+			idx(a_dg)(lambda_reference), 
+			eta, S)
 
 
 def melin(source_data, source_wavelengths, target_wavelengths):
@@ -146,7 +149,7 @@ def melin(source_data, source_wavelengths, target_wavelengths):
 	B_interp = Akima(AB[:, 0], AB[:, 2])
 
 	lambda_reference = 443
-	b, a_ph, a_g, eta, S = QAA(source_data, source_wave, lambda_reference)
+	b, a_ph, a_dg, eta, S = QAA(source_data, source_wave, lambda_reference)
 
 	melin_out = []
 	for lambda_target in target_wave:
@@ -165,9 +168,11 @@ def melin(source_data, source_wavelengths, target_wavelengths):
 			for lmbda in [lambda_source, lambda_target]:
 				bbp = b * (lambda_reference / lmbda) ** eta
 				aph = A_interp(lmbda) * (a_ph / A_interp(lambda_reference)) ** ((1 - B_interp(lmbda)) / (1 - B_interp(lambda_reference)))
-				acd = a_g * np.exp(-S * (lmbda - lambda_reference))
+				acd = a_dg * np.exp(-S * (lmbda - lambda_reference))
 				
-				rrs_f = g0 * (bbp / (bbp + (aph + acd))) + g1 * (bbp / (bbp + (aph + acd))) ** 2
+				a = aph + acd + absorb(lmbda)
+				b = bbp + scatter(lmbda)
+				rrs_f = g0 * (b / (b + a)) + g1 * (b / (b + a)) ** 2
 				Rrs_fs.append( to_Rrs(rrs_f).flatten() )
 
 			Rrs_source, Rrs_target = Rrs_fs
