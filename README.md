@@ -69,4 +69,4 @@ The "%s" represents the sensor abbreviation, which in the above case would mean 
 
 ./Data/Rrs_LUT_VI
 
-The models will then be created which learn the mapping between bands of Rrs_LUT_AER and Rrs_LUT_VI.
+The models will then be created which learn the mapping between bands of Rrs_LUT_AER and Rrs_LUT_VI. 
