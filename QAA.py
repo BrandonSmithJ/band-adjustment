@@ -149,7 +149,7 @@ def melin(source_data, source_wavelengths, target_wavelengths):
 	B_interp = Akima(AB[:, 0], AB[:, 2])
 
 	lambda_reference = 443
-	b, a_ph, a_dg, eta, S = QAA(source_data, source_wave, lambda_reference)
+	b0, a_ph, a_dg, eta, S = QAA(source_data, source_wave, lambda_reference)
 
 	melin_out = []
 	for lambda_target in target_wave:
@@ -166,7 +166,7 @@ def melin(source_data, source_wavelengths, target_wavelengths):
 
 			Rrs_fs = []
 			for lmbda in [lambda_source, lambda_target]:
-				bbp = b * (lambda_reference / lmbda) ** eta
+				bbp = b0 * (lambda_reference / lmbda) ** eta
 				aph = A_interp(lmbda) * (a_ph / A_interp(lambda_reference)) ** ((1 - B_interp(lmbda)) / (1 - B_interp(lambda_reference)))
 				acd = a_dg * np.exp(-S * (lmbda - lambda_reference))
 				

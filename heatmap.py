@@ -22,7 +22,7 @@ def plt_unavailable(ax, sensor, ylbl):
 
 
 if __name__ == '__main__':
-	data  = get_results(True)
+	data  = get_results()
 	order = ['MSI', 'OLI', 'VI', 'OLCI']
 
 	methods   = ['Cubic Spline', 'Mélin & Sclep (2015)', 'Spectral Matching', 'Deep Neural Network']
@@ -65,7 +65,6 @@ if __name__ == '__main__':
 				if 'Mélin' in method and source_sensor in ['MSI', 'OLI']:
 					err.append([np.nan] * len(target_wave))
 				else:
-					if method == 'Mélin & Sclep (2015)': print(RMSE(target, data[method][(source_sensor, target_sensor)]))
 					err.append( RMSE(target, data[method][(source_sensor, target_sensor)]) )
 				ylbl.append(source_sensor.replace('VI', 'VIIRS'))
 
