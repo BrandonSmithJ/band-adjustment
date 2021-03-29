@@ -6,7 +6,7 @@ This repository contains source code for the paper:
 <i>["Spectral Band Adjustments for Remote Sensing Reflectance Spectra in Coastal/Inland Waters"](https://www.osapublishing.org/oe/abstract.cfm?uri=oe-25-23-28650)</i>.
 N. Pahlevan, B. Smith, C. Binding, D. M. O'Donnell. Opt. Express 25, 28650-28667 (2017).
 
-Data used in the paper to train the networks can be found [here](https://www.dropbox.com/s/h7ftg566sj8q1ll/Nima_et_al_Optics_Express_2017.zip?dl=0).
+Data used in the paper to train the networks can be found [here](https://figshare.com/articles/dataset/Hyperspectral_Rrs_Spectra/5378650).
 
 <br>
 
